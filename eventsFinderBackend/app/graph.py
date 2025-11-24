@@ -3,8 +3,8 @@ from eventsFinderBackend.app.models.schemas import AgentState
 from eventsFinderBackend.app.agents.agentRewriter import query_rewriter_node
 from eventsFinderBackend.app.agents.agentSearch import search_node
 from eventsFinderBackend.app.agents.agentExtractor import extraction_node
+from eventsFinderBackend.app.agents.agentPersistence import persistence_node
 
-# --- Conditional Logic Function ---
 def check_results(state: AgentState):
     """
     Decides the next step based on whether events were found.
@@ -33,22 +33,25 @@ def build_graph():
     workflow.add_node("rewriter", query_rewriter_node)
     workflow.add_node("searcher", search_node)
     workflow.add_node("extractor", extraction_node)
+    workflow.add_node("persistence", persistence_node)  
 
     # Add Standard Edges
     workflow.add_edge(START, "rewriter")
     workflow.add_edge("rewriter", "searcher")
     workflow.add_edge("searcher", "extractor")
 
-    # --- Add Conditional Edge ---
-    # syntax: add_conditional_edges(source_node, routing_function, path_map)
+    # --- Conditional Edge Updated ---
     workflow.add_conditional_edges(
-        "extractor",       # From this node...
-        check_results,     # Run this logic...
+        "extractor",
+        check_results,
         {
-            "success": END,    # If 'success', go to END (We will change this to Persistence later)
-            "retry": "rewriter", # If 'retry', loop back to Agent 1
-            "give_up": END     # If 'give_up', go to END
+            "success": "persistence",  # <--- Valid results? Go to Persistence
+            "retry": "rewriter",       # Logic loop
+            "give_up": "persistence"   # Even if we fail, we might want to log it
         }
     )
+    
+    # Finish the flow
+    workflow.add_edge("persistence", END) 
 
     return workflow.compile()

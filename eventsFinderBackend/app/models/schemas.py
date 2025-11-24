@@ -1,6 +1,5 @@
-from typing import List, Optional, TypedDict, Annotated
+from typing import List, TypedDict
 from pydantic import BaseModel, Field
-import operator
 
 # --- 1. Structured Output Models (Pydantic) ---
 # These ensure the LLM generates clean data we can save to MongoDB.
@@ -12,7 +11,7 @@ class Event(BaseModel):
     location: str = Field(description="The venue, city, or address of the event.")
     description: str = Field(description="A brief summary of what the event is.")
     url: str = Field(description="The URL where the event information was found.")
-    score: Optional[int] = Field(description="A relevance score (1-10) assigned by the agent.", default=None)
+    score: float = Field(description="A relevance score (1-10) assigned by the agent.", default=None)
 
 # --- 2. LangGraph State (TypedDict) ---
 # This is the shared memory passed between agents.

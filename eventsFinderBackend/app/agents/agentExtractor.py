@@ -3,7 +3,6 @@ from eventsFinderBackend.app.core.llmClient import get_llm
 from eventsFinderBackend.app.models.schemas import AgentState, Event
 from pydantic import BaseModel, Field
 from typing import List
-import json
 
 # --- 1. Output Wrapper ---
 class EventList(BaseModel):
@@ -28,7 +27,7 @@ def extraction_node(state: AgentState):
     # Prepare the context text for the LLM
     # We join titles and content to give the LLM the full picture
     context_text = "\n\n".join([
-        f"Source {i+1} ({r.get('url', 'N/A')}):\nTitle: {r.get('title', '')}\nContent: {r.get('content', '')}"
+        f"Source {i+1} ({r.get('url', 'N/A')}):\nTitle: {r.get('title', '')}\nContent: {r.get('content', '')}\nScore: {r.get('score', '')}"
         for i, r in enumerate(raw_results)
     ])
 
@@ -52,6 +51,7 @@ def extraction_node(state: AgentState):
     3. RESOLVE DATES: Convert "tonight" or "this Friday" to actual dates (YYYY-MM-DD) based on Current Date.
     4. IGNORE: General articles, "top 10" lists without specific dates, or events far in the past.
     5. If no relevant events are found, return an empty list.
+    6. Keep the score the same as in the raw search results or the higher score in case an event is deduplicated.
     """
 
     msg = [

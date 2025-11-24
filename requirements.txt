@@ -1,0 +1,16 @@
+# Core Orchestration & LLM
+langgraph
+langchain
+langchain-openai
+langchain-core
+
+# Tools & Data
+tavily-python
+pydantic
+
+# Database (MongoDB Atlas)
+pymongo
+dnspython
+
+# Utilities
+python-dotenv

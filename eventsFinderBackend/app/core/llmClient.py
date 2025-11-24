@@ -1,0 +1,13 @@
+from langchain_openai import ChatOpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def get_llm(temperature=0):
+    """Returns a configured ChatOpenAI instance."""
+    return ChatOpenAI(
+        model="gpt-3.5-turbo",  # or "gpt-3.5-turbo" if you want to save cost
+        temperature=temperature,
+        api_key=os.getenv("OPENAI_API_KEY")
+    )

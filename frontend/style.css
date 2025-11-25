@@ -1,0 +1,89 @@
+/* CSS Styling for a Clean Interface */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f7f9;
+    color: #333;
+}
+.container {
+    max-width: 960px;
+    margin: auto;
+}
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+p.tagline {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #7f8c8d;
+}
+#searchForm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+#queryInput {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+button {
+    padding: 12px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+button:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+#results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+.event-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.event-card h3 {
+    margin-top: 0;
+    color: #34495e;
+    font-size: 1.2em;
+}
+.event-card p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #555;
+}
+.event-card a {
+    margin-top: 10px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+.message {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.1em;
+    color: #2c3e50;
+    /* Span across the whole grid for messages */
+    grid-column: 1 / -1; 
+}

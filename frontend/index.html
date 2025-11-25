@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's The Plan? - Event Finder AI</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <div class="container">
+        <h1>🗓️ What's The Plan?</h1>
+        <p class="tagline">Multi-Agent Event Search powered by Tavily & LangGraph</p>
+
+        <form id="searchForm">
+            <input type="text" id="queryInput" placeholder="e.g., Stand-up comedy in London tonight" required>
+            <button type="submit" id="searchButton">Find Events</button>
+        </form>
+
+        <div id="results">
+            <p class="message">Enter a query above to start searching for real-time events.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

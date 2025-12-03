@@ -1,6 +1,4 @@
-// --- JavaScript Logic ---
-// IMPORTANT: Keep this URL for local testing. Update to your AWS URL later!
-const API_URL = 'http://127.0.0.1:8000/search'; 
+const API_URL = '/search'; 
 const searchForm = document.getElementById('searchForm');
 const queryInput = document.getElementById('queryInput');
 const searchButton = document.getElementById('searchButton');
@@ -11,13 +9,13 @@ searchForm.addEventListener('submit', async (e) => {
     const query = queryInput.value.trim();
     if (!query) return;
 
-    // 1. Set UI State to Loading
+    // Set UI State to Loading
     searchButton.disabled = true;
     searchButton.textContent = 'Searching...';
     resultsDiv.innerHTML = '<p class="message">Processing query. Please wait...</p>';
 
     try {
-        // 2. Send request to your FastAPI backend
+        // Send request to your FastAPI backend
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -29,7 +27,6 @@ searchForm.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (!response.ok || data.status !== 'success') {
-            // Handle API errors (e.g., 500 server error)
             throw new Error(data.detail || 'The search agent failed to return results.');
         }
 

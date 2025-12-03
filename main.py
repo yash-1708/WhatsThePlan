@@ -5,6 +5,8 @@ from backend.app.graph import build_graph
 from datetime import datetime
 import uvicorn
 import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 app = FastAPI(title="Tavily Events Finder API")
 
@@ -44,6 +46,13 @@ async def search_events(request: SearchRequest):
     except Exception as e:
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+@app.get("/")
+async def read_root():
+    # When user visits root URL, serve the index.html
+    return FileResponse('frontend/index.html')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

@@ -1,5 +1,5 @@
-from eventsFinderBackend.app.models.schemas import AgentState
-from eventsFinderBackend.app.core.llmClient import get_llm
+from backend.app.models.schemas import AgentState
+from backend.app.core.llmClient import get_llm
 from langchain_core.messages import SystemMessage, HumanMessage
 
 def query_validator_node(state: AgentState):
@@ -37,7 +37,6 @@ def query_validator_node(state: AgentState):
             print(f"Query Status: INVALID (LLM response: {response}). Stopping flow.")
             return {"query_status": "invalid"}
         else:
-            print("Query Status: VALID. Proceeding to Rewriter.")
             return {"query_status": "valid"}
         
         

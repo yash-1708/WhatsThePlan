@@ -1,10 +1,10 @@
 from langgraph.graph import StateGraph, START, END
-from eventsFinderBackend.app.models.schemas import AgentState
-from eventsFinderBackend.app.agents.agentRewriter import query_rewriter_node
-from eventsFinderBackend.app.agents.agentSearch import search_node
-from eventsFinderBackend.app.agents.agentExtractor import extraction_node
-from eventsFinderBackend.app.agents.agentPersistence import persistence_node
-from eventsFinderBackend.app.agents.agentValidator import query_validator_node # <--- NEW IMPORT
+from backend.app.models.schemas import AgentState
+from backend.app.agents.agentRewriter import query_rewriter_node
+from backend.app.agents.agentSearch import search_node
+from backend.app.agents.agentExtractor import extraction_node
+from backend.app.agents.agentPersistence import persistence_node
+from backend.app.agents.agentValidator import query_validator_node # <--- NEW IMPORT
 
 def check_results(state: AgentState):
     """

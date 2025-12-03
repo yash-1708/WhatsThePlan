@@ -1,5 +1,5 @@
 import asyncio
-from eventsFinderBackend.app.graph import build_graph
+from backend.app.graph import build_graph
 from datetime import datetime
 
 async def main():

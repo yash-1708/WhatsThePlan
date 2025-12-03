@@ -1,5 +1,5 @@
-from eventsFinderBackend.app.core.tavilyClient import get_async_tavily_client
-from eventsFinderBackend.app.models.schemas import AgentState
+from backend.app.core.tavilyClient import get_async_tavily_client
+from backend.app.models.schemas import AgentState
 import asyncio
 async def search_node(state: AgentState):
     """
@@ -10,7 +10,7 @@ async def search_node(state: AgentState):
     
     tavily_async = get_async_tavily_client()
     
-    # 1. Create a list of coroutine tasks
+    # Create a list of coroutine tasks
     search_tasks = []
     for q in queries:
         # Schedule the coroutine
@@ -22,14 +22,14 @@ async def search_node(state: AgentState):
         )
         search_tasks.append(task)
 
-    # 2. Execute all tasks concurrently and wait for them to finish
+    # Execute all tasks concurrently and wait for them to finish
     try:
         search_responses = await asyncio.gather(*search_tasks, return_exceptions=True)
     except Exception as e:
         print(f"Critical Async Error: {e}")
         return {"raw_results": []}
 
-    # 3. Process results
+    # Process results
     all_results = []
     for i, response in enumerate(search_responses):
         query_used = queries[i]

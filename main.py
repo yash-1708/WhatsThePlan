@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from eventsFinderBackend.app.graph import build_graph
+from backend.app.graph import build_graph
 from datetime import datetime
 import uvicorn
 import os

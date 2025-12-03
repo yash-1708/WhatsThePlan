@@ -1,5 +1,5 @@
-from eventsFinderBackend.app.core.dbClient import get_db_collection
-from eventsFinderBackend.app.models.schemas import AgentState
+from backend.app.core.dbClient import get_db_collection
+from backend.app.models.schemas import AgentState
 import datetime
 import uuid
 
@@ -9,8 +9,7 @@ def persistence_node(state: AgentState):
     """
     print("--- AGENT 4: SAVING TO MONGODB ---")
     
-    # 1. Prepare the document
-    # We generate a unique ID for this specific run
+    # Prepare the document and generate a unique ID for this specific run
     search_id = str(uuid.uuid4())
     
     document = {
@@ -18,15 +17,13 @@ def persistence_node(state: AgentState):
         "user_query": state.get("user_query"),
         "timestamp": datetime.datetime.utcnow(),
         "date_context": state.get("current_date"),
-        # Convert Pydantic models to dicts
         "events": [event.model_dump() for event in state.get("events", [])],
-        # Optional: Save raw results if you want deep debugging (can be large)
         "raw_results_count": len(state.get("raw_results", [])),
         "raw_results": state.get("raw_results", []),
         "status": "SUCCESS"
     }
 
-    # 2. Insert into DB
+    # Insert into DB
     try:
         collection = get_db_collection()
         collection.insert_one(document)

@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
-from eventsFinderBackend.app.core.llmClient import get_llm
-from eventsFinderBackend.app.models.schemas import AgentState, Event
+from backend.app.core.llmClient import get_llm
+from backend.app.models.schemas import AgentState, Event
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -50,8 +50,8 @@ def extraction_node(state: AgentState):
     2. DEDUPLICATE: If multiple sources mention the same event, combine the info into one entry.
     3. RESOLVE DATES: Convert "tonight" or "this Friday" to actual dates (YYYY-MM-DD) based on Current Date.
     4. IGNORE: General articles, "top 10" lists without specific dates, or events far in the past.
-    5. If no relevant events are found, return an empty list.
-    6. Keep the score the same as in the raw search results or the higher score in case an event is deduplicated.
+    5. If no events are found, return an empty list.
+    6. Keep the confidence score the same as in the raw search results or the higher score in case an event is deduplicated.
     """
 
     msg = [

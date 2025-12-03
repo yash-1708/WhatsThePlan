@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
-from eventsFinderBackend.app.core.llmClient import get_llm
-from eventsFinderBackend.app.models.schemas import AgentState
+from backend.app.core.llmClient import get_llm
+from backend.app.models.schemas import AgentState
 from pydantic import BaseModel, Field
 from typing import List
 import datetime
@@ -25,7 +25,7 @@ def query_rewriter_node(state: AgentState):
 
     # Standard Prompt
     system_msg = f"""You are an expert event researcher. Current Date: {current_date}.
-    Generate 3-5 targeted search queries for the user's request.
+    Generate 3 targeted search queries for the user's request.
     Resolve relative dates (e.g., "this weekend") to specific YYYY-MM-DD dates.
     """
 

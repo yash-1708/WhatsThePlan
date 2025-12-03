@@ -1,5 +1,6 @@
 // --- JavaScript Logic ---
-const API_URL = 'http://127.0.0.1:8000/search'; // Change this to your AWS URL when deployed!
+// IMPORTANT: Keep this URL for local testing. Update to your AWS URL later!
+const API_URL = 'http://127.0.0.1:8000/search'; 
 const searchForm = document.getElementById('searchForm');
 const queryInput = document.getElementById('queryInput');
 const searchButton = document.getElementById('searchButton');
@@ -32,8 +33,18 @@ searchForm.addEventListener('submit', async (e) => {
             throw new Error(data.detail || 'The search agent failed to return results.');
         }
 
+        const events = data.events;
+        
+        // --- VALIDATION CHECK: Check if the graph stopped early (Validator Agent) ---
+        // If the graph stops early due to an 'invalid' query, the backend will return 
+        // an empty event list and no search_id (since persistence was skipped).
+        if (events.length === 0 && data.search_id === undefined) {
+             resultsDiv.innerHTML = '<p class="message" style="color: orange;">Please enter a valid query that specifies both an event type and a location (e.g., "Rock concerts in Chicago next month").</p>';
+             return;
+        }
+
         // 3. Render Results
-        renderEvents(data.events);
+        renderEvents(events);
 
     } catch (error) {
         console.error("Fetch Error:", error);

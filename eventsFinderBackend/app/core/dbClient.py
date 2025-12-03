@@ -17,6 +17,6 @@ def get_db_collection():
     client = MongoClient(uri)
     
     # 3. Select Database & Collection
-    # You can name the DB 'tavily_events_db' and collection 'searches'
+    # DB 'tavily_events_db' and collection 'searches'
     db = client.get_database("tavily_events_db")
     return db.get_collection("searches")

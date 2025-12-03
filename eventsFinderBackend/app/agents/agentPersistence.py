@@ -22,6 +22,7 @@ def persistence_node(state: AgentState):
         "events": [event.model_dump() for event in state.get("events", [])],
         # Optional: Save raw results if you want deep debugging (can be large)
         "raw_results_count": len(state.get("raw_results", [])),
+        "raw_results": state.get("raw_results", []),
         "status": "SUCCESS"
     }
 

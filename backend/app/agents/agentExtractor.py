@@ -4,12 +4,12 @@ from backend.app.models.schemas import AgentState, Event
 from pydantic import BaseModel, Field
 from typing import List
 
-# --- 1. Output Wrapper ---
+# Output Wrapper
 class EventList(BaseModel):
     """A list of extracted events."""
     events: List[Event] = Field(description="The list of events found in the text.")
 
-# --- 2. The Agent Function ---
+# Agent Function
 def extraction_node(state: AgentState):
     """
     Agent 3: Extract structured event data from raw search results.

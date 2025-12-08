@@ -18,7 +18,7 @@ def query_validator_node(state: AgentState):
     
     llm = get_llm()
     
-    # Use a concise system prompt to force a specific, fast output
+    # Concise system prompt to force fast output
     system_prompt = (
         """You are a strict query validator. Your task is to determine if a user query 
         is a request for finding a real-world event (like a concert, festival, show, 

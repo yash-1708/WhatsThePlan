@@ -24,10 +24,9 @@ class AgentState(TypedDict):
     # --- Internal Logic ---
     retry_count: int           # To prevent infinite loops if no events are found
     search_queries: List[str]  # The generated search queries for Tavily
+    query_status:str
     
     # --- Outputs ---
-    # We use Annotated[list, operator.add] if we wanted to append, 
-    # but for this simple logic, overwriting the list is usually safer to avoid duplicates.
     raw_results: List[dict]    # Raw snippets from Tavily
     events: List[Event]        # The structured list of extracted events
     final_response: str        # The human-readable summary

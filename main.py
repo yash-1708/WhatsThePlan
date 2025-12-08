@@ -12,7 +12,7 @@ app = FastAPI(title="Tavily Events Finder API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For dev/demo, allow all. For production, specify domain.
+    allow_origins=["*"],  # For production, specify domain.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,10 +35,11 @@ async def search_events(request: SearchRequest):
         print(f"Processing: {request.query}")
         result = await graph.ainvoke(initial_state)
         
-        # Pure JSON Response for your UI
+        # Pure JSON Response for UI
         return {
             "status": "success",
             "search_id": result.get("search_id"),
+            "query_status":result.get("query_status"),
             # The UI will loop through this list to create elements
             "events": [e.model_dump() for e in result.get("events", [])]
         }

@@ -28,22 +28,18 @@ def check_results(state: AgentState):
 def build_graph():
     workflow = StateGraph(AgentState)
 
-    # Add Nodes
-    workflow.add_node("validator", query_validator_node) # <--- AGENT 0: VALIDATION
-    workflow.add_node("rewriter", query_rewriter_node)  # <--- AGENT 1: REWRITE
-    workflow.add_node("searcher", search_node)          # <--- AGENT 2: SEARCH
-    workflow.add_node("extractor", extraction_node)     # <--- AGENT 3: EXTRACTION
-    workflow.add_node("persistence", persistence_node)  # <--- AGENT 4: PERSISTENCE
+    workflow.add_node("validator", query_validator_node) # AGENT 0: VALIDATION
+    workflow.add_node("rewriter", query_rewriter_node)  # AGENT 1: REWRITE
+    workflow.add_node("searcher", search_node)          # AGENT 2: SEARCH
+    workflow.add_node("extractor", extraction_node)     # AGENT 3: EXTRACTION
+    workflow.add_node("persistence", persistence_node)  # AGENT 4: PERSISTENCE
 
     # 1. Starting Point: Validator
-    # All queries must first pass through the validator.
     workflow.add_edge(START, "validator")
     
     # 2. Conditional Edge after Validator
-    # The graph routes based on the 'query_status' output by the validator agent.
     workflow.add_conditional_edges(
         "validator",
-        # Router function based on the validator's output
         lambda state: state.get("query_status"),
         {
             "valid": "rewriter",  # If valid, proceed to the Rewriter (Agent 1)
@@ -56,7 +52,6 @@ def build_graph():
     workflow.add_edge("searcher", "extractor")
 
     # 4. Conditional Edge after Extractor (Retry/Success/Give Up)
-    # This logic remains the same: retry if needed, otherwise persist/end.
     workflow.add_conditional_edges(
         "extractor",
         check_results,

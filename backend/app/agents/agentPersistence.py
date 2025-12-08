@@ -31,5 +31,5 @@ def persistence_node(state: AgentState):
     except Exception as e:
         print(f"Error saving to MongoDB: {e}")
         
-    # We don't change the state, just pass it through
+    # Don't change the state, just pass it through
     return {"search_id": search_id}

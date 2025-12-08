@@ -15,7 +15,7 @@ searchForm.addEventListener('submit', async (e) => {
     resultsDiv.innerHTML = '<p class="message">Processing query. Please wait...</p>';
 
     try {
-        // Send request to your FastAPI backend
+        // Send request to FastAPI backend
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -32,22 +32,20 @@ searchForm.addEventListener('submit', async (e) => {
 
         const events = data.events;
         
-        // --- VALIDATION CHECK: Check if the graph stopped early (Validator Agent) ---
-        // If the graph stops early due to an 'invalid' query, the backend will return 
-        // an empty event list and no search_id (since persistence was skipped).
-        if (events.length === 0 && data.search_id === undefined) {
+        // Check if the graph stopped early 
+        if (data.query_status=="invalid") {
              resultsDiv.innerHTML = '<p class="message" style="color: orange;">Please enter a valid query that specifies both an event type and a location (e.g., "Rock concerts in Chicago next month").</p>';
              return;
         }
 
-        // 3. Render Results
+        // Render Results
         renderEvents(events);
 
     } catch (error) {
         console.error("Fetch Error:", error);
         resultsDiv.innerHTML = `<p class="message" style="color: red;">Error: ${error.message}. Check your console and ensure the backend is running.</p>`;
     } finally {
-        // 4. Reset UI State
+        // Reset UI State
         searchButton.disabled = false;
         searchButton.textContent = 'Find Events';
     }

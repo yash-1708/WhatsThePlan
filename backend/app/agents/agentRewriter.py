@@ -23,13 +23,11 @@ def query_rewriter_node(state: AgentState):
     llm = get_llm(temperature=0)
     structured_llm = llm.with_structured_output(QueryList)
 
-    # Standard Prompt
     system_msg = f"""You are an expert event researcher. Current Date: {current_date}.
     Generate 3 targeted search queries for the user's request.
     Resolve relative dates (e.g., "this weekend") to specific YYYY-MM-DD dates.
     """
 
-    # --- RETRY LOGIC ---
     # If this is a retry (retry_count > 0), we modify the instructions.
     if retry_count > 0:
         system_msg += """

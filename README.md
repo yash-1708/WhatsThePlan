@@ -62,7 +62,7 @@ Create a file named .env in the root directory (WhatsThePlan/.env) and populate 
 
 ### LLM API Key (Required for Reasoning/Extraction/Validation)
 ~~~
-GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ~~~
 
 ### Tavily API Key (Required for Search)

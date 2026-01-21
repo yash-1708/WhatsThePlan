@@ -6,6 +6,7 @@ from backend.app.models.schemas import AgentState
 
 logger = get_logger(__name__)
 
+
 def query_validator_node(state: AgentState):
     """
     Agent 0: Check if the user query is valid and relevant to event finding.
@@ -31,13 +32,16 @@ def query_validator_node(state: AgentState):
     )
 
     try:
-        response = llm.invoke([
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=f"Query: {user_query}")
-        ]).content.strip().lower()
+        response = (
+            llm.invoke(
+                [SystemMessage(content=system_prompt), HumanMessage(content=f"Query: {user_query}")]
+            )
+            .content.strip()
+            .lower()
+        )
 
         # Check if the LLM returned the expected output
-        if 'invalid' in response:
+        if "invalid" in response:
             logger.info(f"Query status: INVALID (LLM response: {response}). Stopping flow.")
             return {"query_status": "invalid"}
         else:

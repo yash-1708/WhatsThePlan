@@ -205,6 +205,23 @@ Tools configured in `pyproject.toml`:
 - **ruff**: Fast linter (replaces flake8, isort, pyupgrade)
 - **mypy**: Static type checker
 
+### Pre-commit Hooks
+
+Automatically run linters before each commit:
+
+```bash
+# Install hooks (one-time setup)
+pre-commit install
+
+# Run manually on all files
+pre-commit run --all-files
+```
+
+Hooks configured in `.pre-commit-config.yaml`:
+- **ruff**: Linting + auto-fix
+- **ruff-format**: Code formatting
+- **mypy**: Type checking
+
 ## Deployment
 
 For production deployment:

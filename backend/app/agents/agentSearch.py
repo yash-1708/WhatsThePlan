@@ -6,6 +6,8 @@ from backend.app.core.tavilyClient import get_async_tavily_client
 from backend.app.models.schemas import AgentState
 
 logger = get_logger(__name__)
+
+
 async def search_node(state: AgentState):
     """
     Agent 2: Execute search queries in PARALLEL using asyncio.
@@ -23,7 +25,7 @@ async def search_node(state: AgentState):
             query=q,
             search_depth=config.TAVILY_SEARCH_DEPTH,
             max_results=config.TAVILY_MAX_RESULTS,
-            include_answer=config.TAVILY_INCLUDE_ANSWER
+            include_answer=config.TAVILY_INCLUDE_ANSWER,
         )
         search_tasks.append(task)
 
@@ -45,9 +47,9 @@ async def search_node(state: AgentState):
             continue
 
         # Tag results with context (response is a dict here, not an exception)
-        results = response.get('results', []) if isinstance(response, dict) else []
+        results = response.get("results", []) if isinstance(response, dict) else []
         for result in results:
-            result['query_context'] = query_used
+            result["query_context"] = query_used
             all_results.append(result)
 
     logger.info(f"Found {len(all_results)} raw results")

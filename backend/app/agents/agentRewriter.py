@@ -10,8 +10,10 @@ from backend.app.models.schemas import AgentState
 
 logger = get_logger(__name__)
 
+
 class QueryList(BaseModel):
     queries: list[str] = Field(description="A list of targeted search queries.")
+
 
 def query_rewriter_node(state: AgentState):
     """
@@ -58,7 +60,4 @@ Ensure the new queries still relate to the user's original intent.
         logger.warning("Using original query as fallback")
 
     # Return state update: New queries AND incremented retry_count
-    return {
-        "search_queries": queries,
-        "retry_count": retry_count + 1
-    }
+    return {"search_queries": queries, "retry_count": retry_count + 1}

@@ -7,10 +7,13 @@ from backend.app.models.schemas import AgentState, Event
 
 logger = get_logger(__name__)
 
+
 # Output Wrapper
 class EventList(BaseModel):
     """A list of extracted events."""
+
     events: list[Event] = Field(description="The list of events found in the text.")
+
 
 # Agent Function
 def extraction_node(state: AgentState):
@@ -29,10 +32,12 @@ def extraction_node(state: AgentState):
 
     # Prepare the context text for the LLM
     # We join titles and content to give the LLM the full picture
-    context_text = "\n\n".join([
-        f"Source {i+1} ({r.get('url', 'N/A')}):\nTitle: {r.get('title', '')}\nContent: {r.get('content', '')}\nScore: {r.get('score', '')}"
-        for i, r in enumerate(raw_results)
-    ])
+    context_text = "\n\n".join(
+        [
+            f"Source {i+1} ({r.get('url', 'N/A')}):\nTitle: {r.get('title', '')}\nContent: {r.get('content', '')}\nScore: {r.get('score', '')}"
+            for i, r in enumerate(raw_results)
+        ]
+    )
 
     # Initialize LLM
     llm = get_llm(temperature=0)
@@ -59,7 +64,7 @@ Guidelines:
 
     msg = [
         SystemMessage(content=system_msg),
-        HumanMessage(content=f"Here are the search results:\n\n{context_text}")
+        HumanMessage(content=f"Here are the search results:\n\n{context_text}"),
     ]
 
     # Invoke LLM

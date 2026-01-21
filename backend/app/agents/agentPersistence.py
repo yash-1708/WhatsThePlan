@@ -7,6 +7,7 @@ from backend.app.models.schemas import AgentState
 
 logger = get_logger(__name__)
 
+
 def persistence_node(state: AgentState):
     """
     Agent 4: Save the query and results to MongoDB Atlas.
@@ -24,7 +25,7 @@ def persistence_node(state: AgentState):
         "events": [event.model_dump() for event in state.get("events", [])],
         "raw_results_count": len(state.get("raw_results", [])),
         "raw_results": state.get("raw_results", []),
-        "status": "SUCCESS"
+        "status": "SUCCESS",
     }
 
     # Insert into DB

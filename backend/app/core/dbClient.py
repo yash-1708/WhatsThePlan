@@ -19,19 +19,20 @@ def get_db_collection():
 
     try:
         client: MongoClient = MongoClient(
-            config.MONGODB_URI,
-            serverSelectionTimeoutMS=config.MONGODB_TIMEOUT_MS
+            config.MONGODB_URI, serverSelectionTimeoutMS=config.MONGODB_TIMEOUT_MS
         )
 
         # Verify connection is working
-        client.admin.command('ping')
+        client.admin.command("ping")
         logger.debug("MongoDB connection established successfully")
 
         # Select Database & Collection
         db = client.get_database(config.MONGODB_DB_NAME)
         collection = db.get_collection(config.MONGODB_COLLECTION_NAME)
 
-        logger.debug(f"Using database: {config.MONGODB_DB_NAME}, collection: {config.MONGODB_COLLECTION_NAME}")
+        logger.debug(
+            f"Using database: {config.MONGODB_DB_NAME}, collection: {config.MONGODB_COLLECTION_NAME}"
+        )
         return collection
 
     except ConnectionFailure as e:

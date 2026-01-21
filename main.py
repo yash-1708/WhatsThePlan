@@ -27,7 +27,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     logger.info("Starting Tavily Events Finder API")
-    if config.CORS_ORIGINS == ["*"]:
+    if ["*"] == config.CORS_ORIGINS:
         logger.info("CORS enabled for all origins (configure CORS_ORIGINS for production)")
     else:
         logger.info(f"CORS enabled for: {config.CORS_ORIGINS}")
@@ -50,14 +50,16 @@ async def search_events(request: SearchRequest):
         initial_state = {
             "user_query": request.query,
             "current_date": datetime.now().strftime("%Y-%m-%d"),
-            "retry_count": 0
+            "retry_count": 0,
         }
 
         logger.info(f"Processing query: {request.query}")
         result = await graph.ainvoke(initial_state)
 
         events = result.get("events", [])
-        logger.info(f"Search completed: {len(events)} events found (search_id: {result.get('search_id')})")
+        logger.info(
+            f"Search completed: {len(events)} events found (search_id: {result.get('search_id')})"
+        )
 
         # Pure JSON Response for UI
         return {
@@ -65,7 +67,7 @@ async def search_events(request: SearchRequest):
             "search_id": result.get("search_id"),
             "query_status": result.get("query_status"),
             # The UI will loop through this list to create elements
-            "events": [e.model_dump() for e in events]
+            "events": [e.model_dump() for e in events],
         }
 
     except Exception as e:
@@ -79,14 +81,11 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 @app.get("/")
 async def read_root():
     # When user visits root URL, serve the index.html
-    return FileResponse('frontend/index.html')
+    return FileResponse("frontend/index.html")
 
 
 if __name__ == "__main__":
     logger.info(f"Starting server on {config.SERVER_HOST}:{config.SERVER_PORT}")
     uvicorn.run(
-        "main:app",
-        host=config.SERVER_HOST,
-        port=config.SERVER_PORT,
-        reload=config.UVICORN_RELOAD
+        "main:app", host=config.SERVER_HOST, port=config.SERVER_PORT, reload=config.UVICORN_RELOAD
     )

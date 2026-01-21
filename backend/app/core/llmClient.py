@@ -26,11 +26,7 @@ def get_llm(temperature: Optional[float] = None):
     logger.debug(f"Initializing LLM client (model={model}, temperature={temp})")
 
     try:
-        client = ChatOpenAI(
-            model=model,
-            temperature=temp,
-            api_key=SecretStr(config.OPENAI_API_KEY)
-        )
+        client = ChatOpenAI(model=model, temperature=temp, api_key=SecretStr(config.OPENAI_API_KEY))
         logger.debug("LLM client initialized successfully")
         return client
     except Exception as e:

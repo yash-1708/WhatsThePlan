@@ -30,19 +30,9 @@ function toggleTheme() {
 initTheme();
 themeToggle.addEventListener('click', toggleTheme);
 
-// Example query chips
-document.querySelectorAll('.query-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-        queryInput.value = chip.dataset.query;
-        queryInput.focus();
-    });
-});
-
-// Search form submission
-searchForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const query = queryInput.value.trim();
-    if (!query) return;
+// Main search function
+async function performSearch(query) {
+    if (!query || !query.trim()) return;
 
     // Set UI State to Loading
     setLoadingState(true);
@@ -55,7 +45,7 @@ searchForm.addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ query: query }),
+            body: JSON.stringify({ query: query.trim() }),
         });
 
         const data = await response.json();
@@ -90,6 +80,22 @@ searchForm.addEventListener('submit', async (e) => {
     } finally {
         setLoadingState(false);
     }
+}
+
+// Example query chips - click to run search
+document.querySelectorAll('.query-chip').forEach(chip => {
+    chip.addEventListener('click', (e) => {
+        e.preventDefault();
+        const query = chip.getAttribute('data-query');
+        queryInput.value = query;
+        performSearch(query);
+    });
+});
+
+// Search form submission
+searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    performSearch(queryInput.value);
 });
 
 function setLoadingState(isLoading) {

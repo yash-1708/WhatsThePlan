@@ -1,9 +1,12 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from backend.app.core.llmClient import get_llm
+from backend.app.core.logger import get_logger
 from backend.app.models.schemas import AgentState
 from pydantic import BaseModel, Field
 from typing import List
 import datetime
+
+logger = get_logger(__name__)
 
 class QueryList(BaseModel):
     queries: List[str] = Field(description="A list of targeted search queries.")
@@ -18,7 +21,7 @@ def query_rewriter_node(state: AgentState):
     retry_count = state.get("retry_count", 0)
     current_date = state.get("current_date", datetime.datetime.now().strftime("%Y-%m-%d"))
     
-    print(f"--- AGENT 1: REWRITING QUERY (Attempt: {retry_count + 1}) ---")
+    logger.info(f"Agent 1: Rewriting query (attempt: {retry_count + 1})")
 
     llm = get_llm(temperature=0)
     structured_llm = llm.with_structured_output(QueryList)
@@ -42,10 +45,18 @@ def query_rewriter_node(state: AgentState):
 
     msg = [SystemMessage(content=system_msg), HumanMessage(content=user_query)]
 
-    response = structured_llm.invoke(msg)
-    
+    try:
+        response = structured_llm.invoke(msg)
+        queries = response.queries
+        logger.info(f"Generated {len(queries)} search queries")
+    except Exception as e:
+        logger.error(f"Error generating search queries: {e}", exc_info=True)
+        # Return a basic fallback query so the pipeline can continue
+        queries = [user_query]
+        logger.warning("Using original query as fallback")
+
     # Return state update: New queries AND incremented retry_count
     return {
-        "search_queries": response.queries,
+        "search_queries": queries,
         "retry_count": retry_count + 1
     }

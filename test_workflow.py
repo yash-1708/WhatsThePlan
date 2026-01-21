@@ -1,6 +1,9 @@
 import asyncio
 from backend.app.graph import build_graph
+from backend.app.core.logger import get_logger
 from datetime import datetime
+
+logger = get_logger(__name__)
 
 async def main():
     # 1. Build the graph
@@ -13,16 +16,16 @@ async def main():
         "retry_count": 0
     }
 
-    print("Running Async Graph...")
-    
+    logger.info("Running async graph...")
+
     # 3. Use 'ainvoke' for async execution
     result = await app.ainvoke(initial_state)
 
-    # 4. Print the output
-    print("\n--- FINAL RESULT ---")
-    print(f"Events Found: {len(result.get('events', []))}")
+    # 4. Log the output
+    logger.info("Final result received")
+    logger.info(f"Events found: {len(result.get('events', []))}")
     if result.get('events'):
-        print(f"First Event: {result['events'][0]}")
+        logger.debug(f"First event: {result['events'][0]}")
 
 if __name__ == "__main__":
     asyncio.run(main())

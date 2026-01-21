@@ -1,8 +1,11 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from backend.app.core.llmClient import get_llm
+from backend.app.core.logger import get_logger
 from backend.app.models.schemas import AgentState, Event
 from pydantic import BaseModel, Field
 from typing import List
+
+logger = get_logger(__name__)
 
 # Output Wrapper
 class EventList(BaseModel):
@@ -18,7 +21,7 @@ def extraction_node(state: AgentState):
     user_query = state["user_query"]
     current_date = state["current_date"]
     
-    print(f"--- AGENT 3: EXTRACTING EVENTS (Input: {len(raw_results)} snippets) ---")
+    logger.info(f"Agent 3: Extracting events (input: {len(raw_results)} snippets)")
     
     # If no results, return empty list immediately
     if not raw_results:
@@ -64,9 +67,9 @@ def extraction_node(state: AgentState):
         response = structured_llm.invoke(msg)
         extracted_events = response.events
     except Exception as e:
-        print(f"Error in extraction: {e}")
+        logger.error(f"Error in extraction: {e}", exc_info=True)
         extracted_events = []
 
-    print(f"--- EXTRACTED {len(extracted_events)} EVENTS ---")
+    logger.info(f"Extracted {len(extracted_events)} events")
     
     return {"events": extracted_events}

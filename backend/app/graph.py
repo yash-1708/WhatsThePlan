@@ -1,10 +1,13 @@
 from langgraph.graph import StateGraph, START, END
 from backend.app.models.schemas import AgentState
+from backend.app.core.logger import get_logger
 from backend.app.agents.agentRewriter import query_rewriter_node
 from backend.app.agents.agentSearch import search_node
 from backend.app.agents.agentExtractor import extraction_node
 from backend.app.agents.agentPersistence import persistence_node
-from backend.app.agents.agentValidator import query_validator_node # <--- NEW IMPORT
+from backend.app.agents.agentValidator import query_validator_node
+
+logger = get_logger(__name__)
 
 def check_results(state: AgentState):
     """
@@ -17,11 +20,11 @@ def check_results(state: AgentState):
         return "success"
     elif retry_count < 1:
         # Increment retry count and signal to retry
-        state["retry_count"] = retry_count + 1 
-        print(f"--- DECISION: RETRY. Attempt: {retry_count + 1} ---")
+        state["retry_count"] = retry_count + 1
+        logger.info(f"Decision: Retry (attempt {retry_count + 1})")
         return "retry"
     else:
-        print("--- DECISION: GIVE UP. Max retries reached ---")
+        logger.info("Decision: Give up (max retries reached)")
         return "give_up"
 
 

@@ -1,6 +1,9 @@
 from backend.app.models.schemas import AgentState
 from backend.app.core.llmClient import get_llm
+from backend.app.core.logger import get_logger
 from langchain_core.messages import SystemMessage, HumanMessage
+
+logger = get_logger(__name__)
 
 def query_validator_node(state: AgentState):
     """
@@ -14,7 +17,7 @@ def query_validator_node(state: AgentState):
     The response sets 'query_status' to 'valid' or 'invalid' for the graph router.
     """
     user_query = state["user_query"]
-    print(f"--- AGENT 0: VALIDATING QUERY: '{user_query[:50]}...' ---")
+    logger.info(f"Agent 0: Validating query: '{user_query[:50]}...'")
     
     llm = get_llm()
     
@@ -34,7 +37,7 @@ def query_validator_node(state: AgentState):
         
         # Check if the LLM returned the expected output
         if 'invalid' in response:
-            print(f"Query Status: INVALID (LLM response: {response}). Stopping flow.")
+            logger.info(f"Query status: INVALID (LLM response: {response}). Stopping flow.")
             return {"query_status": "invalid"}
         else:
             return {"query_status": "valid"}
@@ -42,6 +45,6 @@ def query_validator_node(state: AgentState):
         
 
     except Exception as e:
-        print(f"Error during query validation LLM call: {e}")
+        logger.error(f"Error during query validation LLM call: {e}", exc_info=True)
         # Default to valid if the validator fails, allowing the rest of the graph to handle it.
         return {"query_status": "valid"}

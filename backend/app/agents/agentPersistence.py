@@ -1,13 +1,16 @@
 from backend.app.core.dbClient import get_db_collection
+from backend.app.core.logger import get_logger
 from backend.app.models.schemas import AgentState
 import datetime
 import uuid
+
+logger = get_logger(__name__)
 
 def persistence_node(state: AgentState):
     """
     Agent 4: Save the query and results to MongoDB Atlas.
     """
-    print("--- AGENT 4: SAVING TO MONGODB ---")
+    logger.info("Agent 4: Saving to MongoDB")
     
     # Prepare the document and generate a unique ID for this specific run
     search_id = str(uuid.uuid4())
@@ -27,9 +30,9 @@ def persistence_node(state: AgentState):
     try:
         collection = get_db_collection()
         collection.insert_one(document)
-        print(f"--- SAVED SEARCH ID: {search_id} ---")
+        logger.info(f"Saved search with ID: {search_id}")
     except Exception as e:
-        print(f"Error saving to MongoDB: {e}")
+        logger.error(f"Error saving to MongoDB: {e}", exc_info=True)
         
     # Don't change the state, just pass it through
     return {"search_id": search_id}

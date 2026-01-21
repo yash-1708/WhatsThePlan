@@ -133,7 +133,9 @@ WhatsThePlan/
 ├── frontend/                        # Static frontend files
 │   └── index.html
 ├── .env.dist                        # Environment template
-└── requirements.txt
+├── requirements.txt                 # Production dependencies
+├── requirements-dev.txt             # Development dependencies (linting)
+└── pyproject.toml                   # Tool configuration (ruff, mypy)
 ```
 
 ## API
@@ -180,6 +182,28 @@ Log format:
 ```
 2024-01-21 10:05:55 - backend.app.agents.agentSearch - INFO - Agent 2: Searching Tavily (3 queries in parallel)
 ```
+
+## Development
+
+### Linting and Type Checking
+
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run linter
+ruff check .
+
+# Auto-fix linting issues
+ruff check . --fix
+
+# Type checking
+mypy backend/ main.py --ignore-missing-imports
+```
+
+Tools configured in `pyproject.toml`:
+- **ruff**: Fast linter (replaces flake8, isort, pyupgrade)
+- **mypy**: Static type checker
 
 ## Deployment
 

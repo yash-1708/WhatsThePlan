@@ -1,16 +1,17 @@
-from langchain_core.messages import SystemMessage, HumanMessage
+import datetime
+
+from langchain_core.messages import HumanMessage, SystemMessage
+from pydantic import BaseModel, Field
+
+from backend.app.core import config
 from backend.app.core.llmClient import get_llm
 from backend.app.core.logger import get_logger
-from backend.app.core import config
 from backend.app.models.schemas import AgentState
-from pydantic import BaseModel, Field
-from typing import List
-import datetime
 
 logger = get_logger(__name__)
 
 class QueryList(BaseModel):
-    queries: List[str] = Field(description="A list of targeted search queries.")
+    queries: list[str] = Field(description="A list of targeted search queries.")
 
 def query_rewriter_node(state: AgentState):
     """
@@ -21,7 +22,7 @@ def query_rewriter_node(state: AgentState):
     # Default to 0 if not set
     retry_count = state.get("retry_count", 0)
     current_date = state.get("current_date", datetime.datetime.now().strftime("%Y-%m-%d"))
-    
+
     logger.info(f"Agent 1: Rewriting query (attempt: {retry_count + 1})")
 
     llm = get_llm(temperature=0)
@@ -35,14 +36,14 @@ def query_rewriter_node(state: AgentState):
     # If this is a retry (retry_count > 0), we modify the instructions.
     if retry_count > 0:
         system_msg += """
-        \nIMPORTANT: Your previous queries returned ZERO results.
-        Please generate NEW queries that are BROADER and less specific.
-        - Try removing specific venue names.
-        - Try broader date ranges.
-        - Try general terms like "events near me" or "city calendar".
-        - Try searching for generic events in the specified location and date range.
-        Ensure the new queries still relate to the user's original intent.
-        """
+IMPORTANT: Your previous queries returned ZERO results.
+Please generate NEW queries that are BROADER and less specific.
+- Try removing specific venue names.
+- Try broader date ranges.
+- Try general terms like "events near me" or "city calendar".
+- Try searching for generic events in the specified location and date range.
+Ensure the new queries still relate to the user's original intent.
+"""
 
     msg = [SystemMessage(content=system_msg), HumanMessage(content=user_query)]
 

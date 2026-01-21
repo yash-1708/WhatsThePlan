@@ -1,7 +1,8 @@
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, ConfigurationError
-from backend.app.core.logger import get_logger
+from pymongo.errors import ConfigurationError, ConnectionFailure
+
 from backend.app.core import config
+from backend.app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -17,7 +18,7 @@ def get_db_collection():
     logger.debug("Connecting to MongoDB")
 
     try:
-        client = MongoClient(
+        client: MongoClient = MongoClient(
             config.MONGODB_URI,
             serverSelectionTimeoutMS=config.MONGODB_TIMEOUT_MS
         )

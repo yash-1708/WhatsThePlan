@@ -1,12 +1,13 @@
-from langgraph.graph import StateGraph, START, END
-from backend.app.models.schemas import AgentState
-from backend.app.core.logger import get_logger
-from backend.app.core import config
-from backend.app.agents.agentRewriter import query_rewriter_node
-from backend.app.agents.agentSearch import search_node
+from langgraph.graph import END, START, StateGraph
+
 from backend.app.agents.agentExtractor import extraction_node
 from backend.app.agents.agentPersistence import persistence_node
+from backend.app.agents.agentRewriter import query_rewriter_node
+from backend.app.agents.agentSearch import search_node
 from backend.app.agents.agentValidator import query_validator_node
+from backend.app.core import config
+from backend.app.core.logger import get_logger
+from backend.app.models.schemas import AgentState
 
 logger = get_logger(__name__)
 
@@ -40,7 +41,7 @@ def build_graph():
 
     # 1. Starting Point: Validator
     workflow.add_edge(START, "validator")
-    
+
     # 2. Conditional Edge after Validator
     workflow.add_conditional_edges(
         "validator",
@@ -62,10 +63,10 @@ def build_graph():
         {
             "success": "persistence",
             "retry": "rewriter",
-            "give_up": "persistence" 
+            "give_up": "persistence"
         }
     )
-    
+
     # 5. Final Flow
     workflow.add_edge("persistence", END)
 

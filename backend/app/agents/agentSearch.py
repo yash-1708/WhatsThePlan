@@ -1,8 +1,9 @@
-from backend.app.core.tavilyClient import get_async_tavily_client
-from backend.app.core.logger import get_logger
-from backend.app.core import config
-from backend.app.models.schemas import AgentState
 import asyncio
+
+from backend.app.core import config
+from backend.app.core.logger import get_logger
+from backend.app.core.tavilyClient import get_async_tavily_client
+from backend.app.models.schemas import AgentState
 
 logger = get_logger(__name__)
 async def search_node(state: AgentState):
@@ -11,9 +12,9 @@ async def search_node(state: AgentState):
     """
     queries = state["search_queries"]
     logger.info(f"Agent 2: Searching Tavily ({len(queries)} queries in parallel)")
-    
+
     tavily_async = get_async_tavily_client()
-    
+
     # Create a list of coroutine tasks
     search_tasks = []
     for q in queries:
@@ -37,14 +38,15 @@ async def search_node(state: AgentState):
     all_results = []
     for i, response in enumerate(search_responses):
         query_used = queries[i]
-        
+
         # Handle individual task failures (if one query fails, others shouldn't die)
         if isinstance(response, Exception):
             logger.warning(f"Error searching for '{query_used}': {response}")
             continue
-            
-        # Tag results with context
-        for result in response.get('results', []):
+
+        # Tag results with context (response is a dict here, not an exception)
+        results = response.get('results', []) if isinstance(response, dict) else []
+        for result in results:
             result['query_context'] = query_used
             all_results.append(result)
 

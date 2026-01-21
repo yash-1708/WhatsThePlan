@@ -1,4 +1,5 @@
-from typing import List, TypedDict
+from typing import Optional, TypedDict
+
 from pydantic import BaseModel, Field
 
 # --- 1. Structured Output Models (Pydantic) ---
@@ -11,7 +12,7 @@ class Event(BaseModel):
     location: str = Field(description="The venue, city, or address of the event.")
     description: str = Field(description="A brief summary of what the event is.")
     url: str = Field(description="The URL where the event information was found.")
-    score: float = Field(description="A relevance score (1-10) assigned by the agent.", default=None)
+    score: Optional[float] = Field(description="A relevance score (1-10) assigned by the agent.", default=None)
 
 # --- 2. LangGraph State (TypedDict) ---
 # This is the shared memory passed between agents.
@@ -20,13 +21,13 @@ class AgentState(TypedDict):
     # --- Inputs ---
     user_query: str            # The raw query from the user
     current_date: str          # Grounding context (e.g., "Friday, Nov 24, 2023")
-    
+
     # --- Internal Logic ---
     retry_count: int           # To prevent infinite loops if no events are found
-    search_queries: List[str]  # The generated search queries for Tavily
+    search_queries: list[str]  # The generated search queries for Tavily
     query_status:str
-    
+
     # --- Outputs ---
-    raw_results: List[dict]    # Raw snippets from Tavily
-    events: List[Event]        # The structured list of extracted events
+    raw_results: list[dict]    # Raw snippets from Tavily
+    events: list[Event]        # The structured list of extracted events
     final_response: str        # The human-readable summary

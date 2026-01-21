@@ -1,11 +1,15 @@
+from typing import Optional
+
 from langchain_openai import ChatOpenAI
-from backend.app.core.logger import get_logger
+from pydantic import SecretStr
+
 from backend.app.core import config
+from backend.app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-def get_llm(temperature: float = None):
+def get_llm(temperature: Optional[float] = None):
     """
     Returns a configured ChatOpenAI instance.
 
@@ -25,7 +29,7 @@ def get_llm(temperature: float = None):
         client = ChatOpenAI(
             model=model,
             temperature=temp,
-            api_key=config.OPENAI_API_KEY
+            api_key=SecretStr(config.OPENAI_API_KEY)
         )
         logger.debug("LLM client initialized successfully")
         return client

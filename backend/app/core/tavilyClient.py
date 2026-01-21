@@ -1,6 +1,7 @@
-from tavily import TavilyClient, AsyncTavilyClient
-from backend.app.core.logger import get_logger
+from tavily import AsyncTavilyClient, TavilyClient
+
 from backend.app.core import config
+from backend.app.core.logger import get_logger
 
 logger = get_logger(__name__)
 

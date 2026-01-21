@@ -5,6 +5,7 @@ All configurable values are loaded from environment variables with sensible defa
 """
 
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()

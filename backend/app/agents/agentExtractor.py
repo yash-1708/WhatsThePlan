@@ -1,16 +1,16 @@
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
+from pydantic import BaseModel, Field
+
 from backend.app.core.llmClient import get_llm
 from backend.app.core.logger import get_logger
 from backend.app.models.schemas import AgentState, Event
-from pydantic import BaseModel, Field
-from typing import List
 
 logger = get_logger(__name__)
 
 # Output Wrapper
 class EventList(BaseModel):
     """A list of extracted events."""
-    events: List[Event] = Field(description="The list of events found in the text.")
+    events: list[Event] = Field(description="The list of events found in the text.")
 
 # Agent Function
 def extraction_node(state: AgentState):
@@ -20,9 +20,9 @@ def extraction_node(state: AgentState):
     raw_results = state.get("raw_results", [])
     user_query = state["user_query"]
     current_date = state["current_date"]
-    
+
     logger.info(f"Agent 3: Extracting events (input: {len(raw_results)} snippets)")
-    
+
     # If no results, return empty list immediately
     if not raw_results:
         return {"events": []}
@@ -40,22 +40,22 @@ def extraction_node(state: AgentState):
 
     # System Prompt
     system_msg = f"""You are an expert data extraction assistant.
-    
-    Context:
-    - Current Date: {current_date}
-    - User Query: {user_query}
-    
-    Your Goal:
-    Extract a list of unique events from the provided search results.
-    
-    Guidelines:
-    1. FOCUS on events that match the user's specific query (location, topic, date).
-    2. DEDUPLICATE: If multiple sources mention the same event, combine the info into one entry.
-    3. RESOLVE DATES: Convert "tonight" or "this Friday" to actual dates (YYYY-MM-DD) based on Current Date.
-    4. IGNORE: General articles, "top 10" lists without specific dates, or events far in the past.
-    5. If no events are found, return an empty list.
-    6. Keep the confidence score the same as in the raw search results or the higher score in case an event is deduplicated.
-    """
+
+Context:
+- Current Date: {current_date}
+- User Query: {user_query}
+
+Your Goal:
+Extract a list of unique events from the provided search results.
+
+Guidelines:
+1. FOCUS on events that match the user's specific query (location, topic, date).
+2. DEDUPLICATE: If multiple sources mention the same event, combine the info into one entry.
+3. RESOLVE DATES: Convert "tonight" or "this Friday" to actual dates (YYYY-MM-DD) based on Current Date.
+4. IGNORE: General articles, "top 10" lists without specific dates, or events far in the past.
+5. If no events are found, return an empty list.
+6. Keep the confidence score the same as in the raw search results or the higher score in case an event is deduplicated.
+"""
 
     msg = [
         SystemMessage(content=system_msg),
@@ -71,5 +71,5 @@ def extraction_node(state: AgentState):
         extracted_events = []
 
     logger.info(f"Extracted {len(extracted_events)} events")
-    
+
     return {"events": extracted_events}

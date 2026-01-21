@@ -1,13 +1,15 @@
+from datetime import datetime
+
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from backend.app.graph import build_graph
-from backend.app.core.logger import get_logger
-from backend.app.core import config
-from datetime import datetime
-import uvicorn
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+from backend.app.core import config
+from backend.app.core.logger import get_logger
+from backend.app.graph import build_graph
 
 logger = get_logger(__name__)
 
@@ -68,7 +70,7 @@ async def search_events(request: SearchRequest):
 
     except Exception as e:
         logger.error(f"Error processing search request: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")

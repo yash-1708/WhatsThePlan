@@ -2,7 +2,7 @@
 
 A multi-agent system using LangGraph to find real-time events based on natural language queries. It uses the OpenAI API for reasoning and structured data extraction, the Tavily Search API for up-to-date web data, and MongoDB Atlas for persistence.
 
-The backend is built with FastAPI, and the frontend is a simple, modern HTML/Vanilla JS interface.
+The backend is built with FastAPI, and the frontend is a modern HTML/Vanilla JS interface with dark mode, animated transitions, and mobile-responsive design.
 
 ## Architecture and Agent Flow
 
@@ -131,14 +131,17 @@ WhatsThePlan/
 │   └── models/
 │       └── schemas.py               # Pydantic models
 ├── frontend/                        # Static frontend files
-│   └── index.html
+│   ├── index.html                   # Main HTML page
+│   ├── style.css                    # Styles with dark mode support
+│   └── script.js                    # Frontend logic
 ├── tests/                           # Test suite (pytest)
 │   ├── conftest.py                  # Shared fixtures
 │   ├── test_config.py               # Config helper tests
 │   ├── test_logger.py               # Logger tests
 │   ├── test_graph.py                # Graph routing tests
 │   ├── test_agents.py               # Agent unit tests
-│   └── test_api.py                  # API integration tests
+│   ├── test_api.py                  # API integration tests
+│   └── test_db_client.py            # Database client tests
 ├── .env.dist                        # Environment template
 ├── requirements.txt                 # Production dependencies
 ├── requirements-dev.txt             # Development dependencies (linting, testing)
@@ -147,7 +150,7 @@ WhatsThePlan/
 
 ## API
 
-**POST `/search`**
+**POST `/search`** - Search for events (rate limited: 10 requests/minute)
 
 Request:
 ```json
@@ -160,6 +163,7 @@ Response:
   "status": "success",
   "search_id": "...",
   "query_status": "valid",
+  "elapsed_time": 3.45,
   "events": [
     {
       "title": "...",
@@ -172,6 +176,33 @@ Response:
   ]
 }
 ```
+
+**GET `/health`** - Health check endpoint
+
+Response:
+```json
+{
+  "status": "healthy",
+  "components": {
+    "api": "healthy",
+    "database": "healthy"
+  }
+}
+```
+
+Returns HTTP 503 if database is unhealthy.
+
+## Frontend Features
+
+The UI includes several enhancements for a better user experience:
+
+- **Dark Mode**: Toggle between light and dark themes (persisted in localStorage)
+- **Example Query Chips**: Click to populate common search queries
+- **Loading Spinner**: Animated spinner during search
+- **Relevance Scores**: Color-coded badges showing event match quality (green ≥70%, yellow ≥40%, gray <40%)
+- **Search Metadata**: Shows "Found X events in Y seconds" after search
+- **Smooth Animations**: Fade-in card animations with staggered delays
+- **Mobile Responsive**: Optimized layout for phones and tablets
 
 ## Logging
 
@@ -249,11 +280,11 @@ pytest tests/test_agents.py::TestValidatorAgent
 ```
 
 Test suite includes:
-- **54 tests** covering all modules
-- **81% code coverage**
-- Unit tests for config helpers, logger, graph logic
+- **65 tests** covering all modules
+- Unit tests for config helpers, logger, graph logic, database client
 - Agent tests with mocked LLM/API responses
-- API integration tests using httpx AsyncClient
+- API integration tests (including health endpoint)
+- Uses httpx AsyncClient for async endpoint testing
 
 ## Deployment
 

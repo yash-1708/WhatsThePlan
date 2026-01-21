@@ -4,17 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What's The Plan? - Event Finder AI</title>
-    <link rel="stylesheet" href="/frontend/style.css"> 
+    <link rel="stylesheet" href="/frontend/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🗓️ What's The Plan?</h1>
-        <p class="tagline">Multi-Agent Event Search powered by Tavily & LangGraph</p>
+        <header>
+            <div class="header-row">
+                <h1>🗓️ What's The Plan?</h1>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="icon-sun">☀️</span>
+                    <span class="icon-moon">🌙</span>
+                </button>
+            </div>
+            <p class="tagline">Multi-Agent Event Search powered by Tavily & LangGraph</p>
+        </header>
 
         <form id="searchForm">
             <input type="text" id="queryInput" placeholder="e.g., Stand-up comedy in London tonight" required>
-            <button type="submit" id="searchButton">Find Events</button>
+            <button type="submit" id="searchButton">
+                <span class="btn-text">Find Events</span>
+                <span class="spinner"></span>
+            </button>
         </form>
+
+        <div class="example-queries">
+            <span class="example-label">Try:</span>
+            <button type="button" class="query-chip" data-query="Jazz concerts in New York this weekend">Jazz in NYC</button>
+            <button type="button" class="query-chip" data-query="Tech meetups in San Francisco next week">Tech meetups SF</button>
+            <button type="button" class="query-chip" data-query="Food festivals in Chicago this month">Food festivals Chicago</button>
+            <button type="button" class="query-chip" data-query="Comedy shows in London tonight">Comedy in London</button>
+        </div>
+
+        <div id="searchMeta" class="search-meta hidden"></div>
 
         <div id="results">
             <p class="message">Enter a query above to start searching for real-time events.</p>

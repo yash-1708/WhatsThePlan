@@ -45,6 +45,8 @@ class TestSearchEndpoint:
             assert data["status"] == "success"
             assert data["search_id"] == "test-search-id-123"
             assert len(data["events"]) == 2
+            assert "elapsed_time" in data
+            assert isinstance(data["elapsed_time"], float)
 
     @pytest.mark.asyncio
     async def test_search_with_empty_results(self):
@@ -125,6 +127,43 @@ class TestSearchEndpoint:
             response = await client.post("/search", json={})
 
         assert response.status_code == 422
+
+
+class TestHealthEndpoint:
+    """Tests for GET /health endpoint."""
+
+    @pytest.mark.asyncio
+    async def test_health_returns_healthy_when_db_connected(self):
+        """Should return healthy status when database is connected."""
+        with patch("main.check_db_health", return_value=True):
+            from main import app
+
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                response = await client.get("/health")
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["status"] == "healthy"
+            assert data["components"]["api"] == "healthy"
+            assert data["components"]["database"] == "healthy"
+
+    @pytest.mark.asyncio
+    async def test_health_returns_degraded_when_db_disconnected(self):
+        """Should return degraded status when database is unhealthy."""
+        with patch("main.check_db_health", return_value=False):
+            from main import app
+
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                response = await client.get("/health")
+
+            assert response.status_code == 503
+            data = response.json()
+            assert data["status"] == "degraded"
+            assert data["components"]["database"] == "unhealthy"
 
 
 class TestRootEndpoint:

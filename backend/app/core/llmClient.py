@@ -1,28 +1,31 @@
 from langchain_openai import ChatOpenAI
-import os
-from dotenv import load_dotenv
 from backend.app.core.logger import get_logger
-
-load_dotenv()
+from backend.app.core import config
 
 logger = get_logger(__name__)
 
-def get_llm(temperature=0):
-    """Returns a configured ChatOpenAI instance."""
-    api_key = os.getenv("OPENAI_API_KEY")
 
-    if not api_key:
+def get_llm(temperature: float = None):
+    """
+    Returns a configured ChatOpenAI instance.
+
+    Args:
+        temperature: Override for LLM temperature. If None, uses LLM_TEMPERATURE from config.
+    """
+    if not config.OPENAI_API_KEY:
         logger.error("OPENAI_API_KEY not found in environment variables")
         raise ValueError("OPENAI_API_KEY not found in .env")
 
-    model = "gpt-4o"
-    logger.debug(f"Initializing LLM client (model={model}, temperature={temperature})")
+    temp = temperature if temperature is not None else config.LLM_TEMPERATURE
+    model = config.LLM_MODEL
+
+    logger.debug(f"Initializing LLM client (model={model}, temperature={temp})")
 
     try:
         client = ChatOpenAI(
             model=model,
-            temperature=temperature,
-            api_key=api_key
+            temperature=temp,
+            api_key=config.OPENAI_API_KEY
         )
         logger.debug("LLM client initialized successfully")
         return client

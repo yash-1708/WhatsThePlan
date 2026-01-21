@@ -1,110 +1,198 @@
-# 🗓️ What's The Plan? - Multi-Agent Event Finder
+# What's The Plan? - Multi-Agent Event Finder
 
-This project implements a robust, multi-agent system using LangGraph to find real-time events based on natural language queries. It utilises the Gemini API for reasoning and structured data extraction, the Tavily Search API for up-to-date web data, and MongoDB Atlas for persistence.
+A multi-agent system using LangGraph to find real-time events based on natural language queries. It uses the OpenAI API for reasoning and structured data extraction, the Tavily Search API for up-to-date web data, and MongoDB Atlas for persistence.
 
 The backend is built with FastAPI, and the frontend is a simple, modern HTML/Vanilla JS interface.
 
-# 🚀 Architecture and Agent Flow
+## Architecture and Agent Flow
 
-The system orchestrates a set of specialised agents into a directed graph, ensuring efficiency and data quality. The addition of the Validator Agent ensures we stop processing irrelevant queries immediately.
+The system orchestrates a set of specialized agents into a directed graph, ensuring efficiency and data quality. The Validator Agent ensures we stop processing irrelevant queries immediately.
 
-### Agent Responsibilities:
+### Agent Responsibilities
 
-| Agent Node | Role | Input | Output | 
- | ----- | ----- | ----- | ----- | 
-| **0. Validator** | **Pre-Check & Guardrail.** Ensures the query is relevant (event type + location) before proceeding. | `user_query` | `query_status` (`valid` or `invalid`) | 
-| **1. Rewriter** | **Query Preparation.** Takes the user query, resolves relative dates (e.g., "this weekend"), and generates 3-5 specific search queries. | `user_query`, `retry_count` | `search_queries` | 
-| **2. Searcher** | **Real-Time Retrieval.** Executes all generated queries in **parallel** using the Tavily API. | `search_queries` | `raw_search_results` | 
-| **3. Extractor** | **Data Synthesis.** Uses Gemini's structured output to read search snippets, filter noise, resolve dates, and output a clean, structured JSON list of `Event` objects. | `raw_search_results` | `events` (List of Events) | 
-| **4. Persistence** | **Logging & Storage.** Saves the entire execution context (original query, search results, final events, etc.) to MongoDB Atlas. | Final State | `search_id` |
+| Agent | Role | Input | Output |
+|-------|------|-------|--------|
+| **0. Validator** | Pre-check guardrail. Ensures the query is relevant (event type + location) before proceeding. | `user_query` | `query_status` (`valid` or `invalid`) |
+| **1. Rewriter** | Query preparation. Resolves relative dates (e.g., "this weekend") and generates targeted search queries. | `user_query`, `retry_count` | `search_queries` |
+| **2. Searcher** | Real-time retrieval. Executes all generated queries in **parallel** using the Tavily API. | `search_queries` | `raw_search_results` |
+| **3. Extractor** | Data synthesis. Uses LLM structured output to filter noise, resolve dates, and output clean `Event` objects. | `raw_search_results` | `events` (List of Events) |
+| **4. Persistence** | Logging & storage. Saves the entire execution context to MongoDB Atlas. | Final State | `search_id` |
 
 ![Agent Flow Mermaid Diagram](https://github.com/yash-1708/WhatsThePlan/blob/main/WhatsThePlanGraph.png "Agent Flow")
-# 🛠️ Project Setup and Installation
 
-Follow these steps to set up the project locally.
+## Project Setup and Installation
 
-## 1. Prerequisites
+### 1. Prerequisites
 
-- You must have Python 3.9+ installed on your system
-- MongoDB Atlas Cluster (A free M0 tier cluster is sufficient)
+- Python 3.9+
+- MongoDB Atlas Cluster (free M0 tier is sufficient)
 
-## 2. Install Python Dependencies
+### 2. Install Python Dependencies
 
-Navigate to the root of the project folder (WhatsThePlan/) and install the required libraries.
-(Note that python and pip are aliases set for python3 and pip3 using 
-~~~
-alias python = python3
-alias pip = pip3
-~~~
-
-- Create and activate a Python virtual environment (recommended)
-~~~
+```bash
+# Create and activate virtual environment
 python -m venv venv
-~~~
 
-- On Windows:
-~~~
+# On Windows:
 .\venv\Scripts\activate
-~~~
-- On macOS/Linux:
-~~~
+
+# On macOS/Linux:
 source venv/bin/activate
-~~~
 
-- Install required packages
-~~~
+# Install dependencies
 pip install -r requirements.txt
-~~~
+```
 
-## 3. Configure Environment Variables
+### 3. Configure Environment Variables
 
-Create a file named .env in the root directory (WhatsThePlan/.env) and populate it with your confidential keys. These are necessary for the application to function. A sample file named 'env.dist' is in the repo.
+Create a `.env` file in the root directory. See `.env.dist` for the full template.
 
-### LLM API Key (Required for Reasoning/Extraction/Validation)
-~~~
-OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-~~~
+**Required variables:**
 
-### Tavily API Key (Required for Search)
-~~~
-TAVILY_API_KEY="YOUR_TAVILY_API_KEY"
-~~~
+```bash
+# API Keys (required)
+OPENAI_API_KEY=your_openai_api_key
+TAVILY_API_KEY=your_tavily_api_key
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/...
+```
 
-### MongoDB Atlas Connection String (Required for Persistence)
-Ensure you replace <username>, <password>, and <cluster-name>
-~~~
-MONGODB_URI="mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/...."
-~~~
+**Optional configuration (with defaults):**
 
-## 4. Start the Backend Server (FastAPI)
+```bash
+# LLM Configuration
+LLM_MODEL=gpt-4o                    # OpenAI model to use
+LLM_TEMPERATURE=0                   # Temperature (0-2)
 
-Ensure your virtual environment is active. The backend runs on port 8000.
+# Tavily Search Configuration
+TAVILY_MAX_RESULTS=3                # Results per search query
+TAVILY_SEARCH_DEPTH=advanced        # basic or advanced
+TAVILY_INCLUDE_ANSWER=true          # Include AI-generated answer
 
-### In the WhatsThePlan/ directory
-~~~
+# Agent Configuration
+MAX_RETRY_COUNT=1                   # Retry attempts when no results found
+REWRITER_NUM_QUERIES=3              # Number of search queries to generate
+
+# MongoDB Configuration
+MONGODB_DB_NAME=tavily_events_db    # Database name
+MONGODB_COLLECTION_NAME=searches    # Collection name
+MONGODB_TIMEOUT_MS=5000             # Connection timeout
+
+# Server Configuration
+SERVER_HOST=0.0.0.0                 # Server bind address
+PORT=8000                           # Server port
+UVICORN_RELOAD=true                 # Hot reload (set false for production)
+
+# CORS Configuration
+CORS_ORIGINS=*                      # Comma-separated origins or * for all
+
+# Logging Configuration
+LOG_LEVEL=INFO                      # DEBUG, INFO, WARNING, ERROR, CRITICAL
+```
+
+### 4. Start the Server
+
+```bash
 python main.py
-~~~
+```
 
-Success: The server will start and be accessible at http://127.0.0.1:8000.
+The server will start at http://127.0.0.1:8000. The frontend is served automatically at the root URL.
 
-(You can verify the API is live by navigating to http://127.0.0.1:8000/docs in your browser to access the OpenAPI documentation for the FastAPI endpoint).
+You can also access the API documentation at http://127.0.0.1:8000/docs.
 
-## 5. Start the Frontend UI
+## Usage
 
-The frontend is a static HTML file that calls the local backend API.
+Open http://127.0.0.1:8000 in your browser.
 
-Keep the FastAPI server running in one terminal.
+**Valid query example:** "Electronic music festival in Barcelona this summer"
+- The Validator returns `valid`, the full pipeline executes, and results are displayed.
 
-Open the frontend UI by double-clicking the file ui/index.html in your file explorer.
+**Invalid query example:** "What is the square root of 9?"
+- The Validator returns `invalid`, and the UI displays a warning message.
 
-# 📝 Usage and Testing the Validator
+## Project Structure
 
-Open the UI (ui/index.html).
+```
+WhatsThePlan/
+├── main.py                          # FastAPI app entry point
+├── backend/app/
+│   ├── graph.py                     # LangGraph workflow definition
+│   ├── agents/
+│   │   ├── agentValidator.py        # Agent 0: Query validation
+│   │   ├── agentRewriter.py         # Agent 1: Query rewriting
+│   │   ├── agentSearch.py           # Agent 2: Tavily search
+│   │   ├── agentExtractor.py        # Agent 3: Event extraction
+│   │   └── agentPersistence.py      # Agent 4: MongoDB persistence
+│   ├── core/
+│   │   ├── config.py                # Central configuration
+│   │   ├── logger.py                # Logging configuration
+│   │   ├── llmClient.py             # OpenAI client
+│   │   ├── tavilyClient.py          # Tavily client
+│   │   └── dbClient.py              # MongoDB client
+│   └── models/
+│       └── schemas.py               # Pydantic models
+├── frontend/                        # Static frontend files
+│   └── index.html
+├── .env.dist                        # Environment template
+└── requirements.txt
+```
 
-Test 1 (Valid Query): Enter Electronic music festival in Barcelona this summer.
+## API
 
-Expected Result: The console will show the Validator agent returning valid, and the full agent pipeline will execute, leading to results.
+**POST `/search`**
 
-Test 2 (Invalid Query): Enter What is the square root of 9?.
+Request:
+```json
+{"query": "Comedy shows in Chicago this weekend"}
+```
 
-Expected Result: The console will show the Validator agent returning invalid. The search button will quickly reset, and the UI will display the orange warning message: "Please enter a valid query that specifies both an event type and a location..."
+Response:
+```json
+{
+  "status": "success",
+  "search_id": "...",
+  "query_status": "valid",
+  "events": [
+    {
+      "title": "...",
+      "date": "...",
+      "location": "...",
+      "description": "...",
+      "url": "...",
+      "score": 0.95
+    }
+  ]
+}
+```
+
+## Logging
+
+The application uses structured logging with configurable levels:
+
+```bash
+# More verbose (shows client initialization, debug info)
+LOG_LEVEL=DEBUG python main.py
+
+# Production (only warnings and errors)
+LOG_LEVEL=WARNING python main.py
+```
+
+Log format:
+```
+2024-01-21 10:05:55 - backend.app.agents.agentSearch - INFO - Agent 2: Searching Tavily (3 queries in parallel)
+```
+
+## Deployment
+
+For production deployment:
+
+```bash
+# .env settings for production
+UVICORN_RELOAD=false
+CORS_ORIGINS=https://yourdomain.com
+LOG_LEVEL=WARNING
+```
+
+Procfile for Heroku/similar:
+```
+web: uvicorn main:app --host 0.0.0.0 --port $PORT
+```

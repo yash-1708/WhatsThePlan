@@ -1,6 +1,7 @@
 from langgraph.graph import StateGraph, START, END
 from backend.app.models.schemas import AgentState
 from backend.app.core.logger import get_logger
+from backend.app.core import config
 from backend.app.agents.agentRewriter import query_rewriter_node
 from backend.app.agents.agentSearch import search_node
 from backend.app.agents.agentExtractor import extraction_node
@@ -18,13 +19,13 @@ def check_results(state: AgentState):
 
     if events:
         return "success"
-    elif retry_count < 1:
+    elif retry_count < config.MAX_RETRY_COUNT:
         # Increment retry count and signal to retry
         state["retry_count"] = retry_count + 1
-        logger.info(f"Decision: Retry (attempt {retry_count + 1})")
+        logger.info(f"Decision: Retry (attempt {retry_count + 1}/{config.MAX_RETRY_COUNT})")
         return "retry"
     else:
-        logger.info("Decision: Give up (max retries reached)")
+        logger.info(f"Decision: Give up (max retries {config.MAX_RETRY_COUNT} reached)")
         return "give_up"
 
 

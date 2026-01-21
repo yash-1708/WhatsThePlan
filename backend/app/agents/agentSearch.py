@@ -1,5 +1,6 @@
 from backend.app.core.tavilyClient import get_async_tavily_client
 from backend.app.core.logger import get_logger
+from backend.app.core import config
 from backend.app.models.schemas import AgentState
 import asyncio
 
@@ -18,10 +19,10 @@ async def search_node(state: AgentState):
     for q in queries:
         # Schedule the coroutine
         task = tavily_async.search(
-            query=q, 
-            search_depth="advanced", 
-            max_results=3,
-            include_answer=True # Useful for context
+            query=q,
+            search_depth=config.TAVILY_SEARCH_DEPTH,
+            max_results=config.TAVILY_MAX_RESULTS,
+            include_answer=config.TAVILY_INCLUDE_ANSWER
         )
         search_tasks.append(task)
 

@@ -1,6 +1,7 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from backend.app.core.llmClient import get_llm
 from backend.app.core.logger import get_logger
+from backend.app.core import config
 from backend.app.models.schemas import AgentState
 from pydantic import BaseModel, Field
 from typing import List
@@ -27,7 +28,7 @@ def query_rewriter_node(state: AgentState):
     structured_llm = llm.with_structured_output(QueryList)
 
     system_msg = f"""You are an expert event researcher. Current Date: {current_date}.
-    Generate 3 targeted search queries for the user's request.
+    Generate {config.REWRITER_NUM_QUERIES} targeted search queries for the user's request.
     Resolve relative dates (e.g., "this weekend") to specific YYYY-MM-DD dates.
     """
 

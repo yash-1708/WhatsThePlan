@@ -132,10 +132,17 @@ WhatsThePlan/
 │       └── schemas.py               # Pydantic models
 ├── frontend/                        # Static frontend files
 │   └── index.html
+├── tests/                           # Test suite (pytest)
+│   ├── conftest.py                  # Shared fixtures
+│   ├── test_config.py               # Config helper tests
+│   ├── test_logger.py               # Logger tests
+│   ├── test_graph.py                # Graph routing tests
+│   ├── test_agents.py               # Agent unit tests
+│   └── test_api.py                  # API integration tests
 ├── .env.dist                        # Environment template
 ├── requirements.txt                 # Production dependencies
-├── requirements-dev.txt             # Development dependencies (linting)
-└── pyproject.toml                   # Tool configuration (ruff, mypy)
+├── requirements-dev.txt             # Development dependencies (linting, testing)
+└── pyproject.toml                   # Tool configuration (ruff, mypy, pytest)
 ```
 
 ## API
@@ -198,7 +205,7 @@ ruff check .
 ruff check . --fix
 
 # Type checking
-mypy backend/ main.py --ignore-missing-imports
+mypy backend/ main.py --ignore-missing-imports --no-site-packages
 ```
 
 Tools configured in `pyproject.toml`:
@@ -221,6 +228,32 @@ Hooks configured in `.pre-commit-config.yaml`:
 - **ruff**: Linting + auto-fix
 - **ruff-format**: Code formatting
 - **mypy**: Type checking
+
+### Testing
+
+```bash
+# Run all tests
+pytest
+
+# Verbose output
+pytest tests/ -v
+
+# With coverage report
+pytest --cov=backend --cov-report=term-missing
+
+# Run specific test file
+pytest tests/test_agents.py
+
+# Run specific test class
+pytest tests/test_agents.py::TestValidatorAgent
+```
+
+Test suite includes:
+- **54 tests** covering all modules
+- **81% code coverage**
+- Unit tests for config helpers, logger, graph logic
+- Agent tests with mocked LLM/API responses
+- API integration tests using httpx AsyncClient
 
 ## Deployment
 

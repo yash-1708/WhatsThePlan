@@ -1,11 +1,36 @@
+# Environment
 /.env
+env/
+venv/
+.venv/
+/myenv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+coverage.xml
+*.cover
+
+# Linting/Type checking
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# AWS Elastic Beanstalk
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-env/
-__pycache__/
-/myenv
-*.pyc
-.vscode/
 .ebextensions/*
+
+# Project
 CLAUDE.md
